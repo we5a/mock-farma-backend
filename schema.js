@@ -41,7 +41,9 @@ const defaultProfile = {
 };
 
 const defaultAuthPayload = {
-  token: '-=AAA123_authentication_token_from_backend=-'
+  name: 'Jin Smith',
+  token: '-=AAA123_authentication_token_from_backend=-',
+  avatar_url: 'https://mpng.subpng.com/20180326/wzw/kisspng-computer-icons-user-profile-avatar-female-profile-5ab915f791e2c1.8067312315220792235976.jpg'
 }
 
 const UserType = new GraphQLObjectType({
@@ -79,7 +81,8 @@ const SurveyAnswer = new GraphQLObjectType({
 const AuthPayload = new GraphQLObjectType({
   name: 'AuthPayload',
   fields: () => ({
-    name: { type: GraphQLString},
+    name: { type: GraphQLString },
+    avatar_url: { type: GraphQLString },
     email: { type: GraphQLString },
     password: { type: GraphQLString },
     token: { type: GraphQLString }
@@ -138,7 +141,12 @@ const RootMutation = new GraphQLObjectType({
       },
       resolve(parent, args, context, info) {
         console.log('Login triggered with args', context);
-        return Promise.resolve({email: args.email, password: args.password, token: defaultAuthPayload.token });
+        return Promise.resolve({
+          name: defaultAuthPayload.name,
+          email: args.email,
+          avatar_url: defaultAuthPayload.avatar_url,
+          token: defaultAuthPayload.token
+        });
       }
     }
   }
