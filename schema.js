@@ -40,6 +40,10 @@ const defaultProfile = {
   drinker_status: false
 };
 
+const defaultAuthPayload = {
+  token: '-=AAA123_authentication_token_from_backend=-'
+}
+
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -75,8 +79,10 @@ const SurveyAnswer = new GraphQLObjectType({
 const AuthPayload = new GraphQLObjectType({
   name: 'AuthPayload',
   fields: () => ({
+    name: { type: GraphQLString},
     email: { type: GraphQLString },
-    password: { type: GraphQLString }
+    password: { type: GraphQLString },
+    token: { type: GraphQLString }
   })
 });
 
@@ -132,7 +138,7 @@ const RootMutation = new GraphQLObjectType({
       },
       resolve(parent, args, context, info) {
         console.log('Login triggered with args', context);
-        return Promise.resolve({email: args.email, password: args.password });
+        return Promise.resolve({email: args.email, password: args.password, token: defaultAuthPayload.token });
       }
     }
   }
