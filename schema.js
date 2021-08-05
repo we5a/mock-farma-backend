@@ -127,6 +127,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args, context, info) {
         console.log('Login triggered with args', args);
+        return Promise.resolve(true);
       }
     }
   }
