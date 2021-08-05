@@ -32,9 +32,9 @@ const users = [
 
 const defaultProfile = {
   id: 1,
-  full_name: 'Jame Smith (default)',
-  email: 'default-jane@gmail.com',
-  birth_date: '1967-10-05',
+  full_name: 'Jin Smith (default)',
+  email: 'default-jine@gmail.com',
+  birth_date: '1967-10-05', // YYYY-MM-DD
   ethnic_identity: 'Hispanic/Latino/LatinX',
   smoker_status: false,
   drinker_status: false
@@ -69,6 +69,15 @@ const SurveyAnswer = new GraphQLObjectType({
     question_id: { type: GraphQLString },
     question_text: { type: GraphQLString },
     value: { type: GraphQLScalarType }
+  })
+});
+
+const AuthPayload = new GraphQLObjectType({
+  name: 'AuthPayload',
+  fields: () => ({
+    name: { type: GraphQLString },
+    email: { type: GraphQLString },
+    password: { type: GraphQLString }
   })
 });
 
@@ -107,6 +116,17 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         // in real app: check token and get proper profile data to send
         return Promise.resolve(defaultProfile);
+      }
+    },
+    login: {
+      type: AuthPayload,
+      args: {
+        name: { type: GraphQLString },
+        email: { type: GraphQLString },
+        password: { type: GraphQLString }
+      },
+      resolve(parent, args, context, info) {
+        console.log('Login triggered with args', args);
       }
     }
   }
