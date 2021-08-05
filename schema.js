@@ -35,6 +35,7 @@ const defaultProfile = {
   full_name: 'Jame Smith (default)',
   email: 'default-jane@gmail.com',
   birth_date: '1967-10-05',
+  ethnic_identity: 'Hispanic/Latino/LatinX',
   smoker_status: false,
   drinker_status: false
 };
@@ -56,6 +57,7 @@ const UserProfile = new GraphQLObjectType({
     full_name: { type: GraphQLString },
     email: { type: GraphQLString },
     birth_date: { type: GraphQLString },
+    ethnic_identity: { type: GraphQLString},
     smoker_status: { type: GraphQLBoolean },
     drinker_status: { type: GraphQLBoolean }
   })
