@@ -30,7 +30,14 @@ const users = [
   }
 ];
 
-
+const defaultProfile = {
+  id: 1,
+  full_name: 'Jame Smith (default)',
+  email: 'default-jane@gmail.com',
+  birth_date: '1967-10-05',
+  smoker_status: false,
+  drinker_status: false
+};
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -39,6 +46,18 @@ const UserType = new GraphQLObjectType({
     user_name: { type: GraphQLString },
     user_email: { type: GraphQLString },
     user_token: { type: GraphQLString }
+  })
+});
+
+const UserProfile = new GraphQLObjectType({
+  name: 'UserProfile',
+  fields: () => ({
+    id: { type: GraphQLID },
+    full_name: { type: GraphQLString },
+    email: { type: GraphQLString },
+    birth_date: { type: GraphQLString },
+    smoker_status: { type: GraphQLBoolean },
+    drinker_status: { type: GraphQLBoolean }
   })
 });
 
@@ -77,8 +96,15 @@ const RootQuery = new GraphQLObjectType({
         user_id: {type: GraphQLID }
       },
       resolve(parent, args) {
-        console.log('Nees', args.user_id);
+        console.log('Need', args.user_id);
         return Promise.resolve(users.find(u => u.user_id === Number.parseInt(args.user_id)));
+      }
+    },
+    profile: {
+      type: UserProfile,
+      resolve(parent, args) {
+        // in real app: check token and get proper profile data to send
+        return Promise.resolve(defaultProfile);
       }
     }
   }
