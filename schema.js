@@ -75,7 +75,6 @@ const SurveyAnswer = new GraphQLObjectType({
 const AuthPayload = new GraphQLObjectType({
   name: 'AuthPayload',
   fields: () => ({
-    name: { type: GraphQLString },
     email: { type: GraphQLString },
     password: { type: GraphQLString }
   })
@@ -118,21 +117,28 @@ const RootQuery = new GraphQLObjectType({
         return Promise.resolve(defaultProfile);
       }
     },
+    
+  }
+});
+
+const RootMutation = new GraphQLObjectType({
+  name: 'RootMutationType',
+  fields: {
     login: {
       type: AuthPayload,
       args: {
-        name: { type: GraphQLString },
         email: { type: GraphQLString },
         password: { type: GraphQLString }
       },
       resolve(parent, args, context, info) {
-        console.log('Login triggered with args', args);
-        return Promise.resolve(true);
+        console.log('Login triggered with args', context);
+        return Promise.resolve({email: args.email, password: args.password });
       }
     }
   }
-});
+})
 
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: RootMutation
 });
