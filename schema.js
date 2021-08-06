@@ -115,7 +115,6 @@ const RootQuery = new GraphQLObjectType({
         user_id: {type: GraphQLID }
       },
       resolve(parent, args) {
-        console.log('Need', args.user_id);
         return Promise.resolve(users.find(u => u.user_id === Number.parseInt(args.user_id)));
       }
     },
@@ -140,11 +139,23 @@ const RootMutation = new GraphQLObjectType({
         password: { type: GraphQLString }
       },
       resolve(parent, args, context, info) {
-        console.log('Login triggered with args', context);
         return Promise.resolve({
           name: defaultAuthPayload.name,
           email: args.email,
           avatar_url: defaultAuthPayload.avatar_url,
+          token: defaultAuthPayload.token
+        });
+      }
+    },
+    signup: {
+      type: AuthPayload,
+      args: {
+        email: { type: GraphQLString },
+        password: { type: GraphQLString }
+      },
+      resolve(parent, args, context, info) {
+        return Promise.resolve({
+          email: args.email,
           token: defaultAuthPayload.token
         });
       }
