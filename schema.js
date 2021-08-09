@@ -125,7 +125,6 @@ const RootQuery = new GraphQLObjectType({
         return Promise.resolve(defaultProfile);
       }
     },
-    
   }
 });
 
@@ -159,9 +158,30 @@ const RootMutation = new GraphQLObjectType({
           token: defaultAuthPayload.token
         });
       }
+    },
+    profile: {
+      type: UserProfile,
+      args: {
+        full_name: { type: GraphQLString },
+        email: { type: GraphQLString },
+        birth_date: { type: GraphQLString },
+        ethnic_identity: { type: GraphQLString },
+        smoker_status: { type: GraphQLBoolean },
+        drinker_status: { type: GraphQLBoolean }
+      },
+      resolve(parent, args, context, info) {
+        return Promise.resolve({
+          full_name: args.full_name || defaultProfile.name,
+          email: args.email || defaultProfile.email,
+          birth_date: args.birth_dateh || defaultProfile.birth_date,
+          ethnic_identity: args.ethnic_identity || defaultProfile.ethnic_identity,
+          smoker_status: args.smoker_status || defaultProfile.smoker_status,
+          drinker_status: args.drinker_status || defaultProfile.drinker_status
+        });
+      }
     }
   }
-})
+});
 
 module.exports = new GraphQLSchema({
   query: RootQuery,
