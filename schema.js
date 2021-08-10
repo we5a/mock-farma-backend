@@ -6,7 +6,8 @@ const {
   GraphQLString,
   GraphQLSchema,
   GraphQLScalarType,
-  GraphQLList
+  GraphQLList,
+  GraphQLInputObjectType
 } = require('graphql');
 
 const users = [
@@ -63,18 +64,9 @@ const UserProfile = new GraphQLObjectType({
     full_name: { type: GraphQLString },
     email: { type: GraphQLString },
     birth_date: { type: GraphQLString },
-    ethnic_identity: { type: GraphQLString},
+    ethnic_identity: { type: GraphQLString },
     smoker_status: { type: GraphQLBoolean },
     drinker_status: { type: GraphQLBoolean }
-  })
-});
-
-const SurveyAnswer = new GraphQLObjectType({
-  name: 'SurveyAnswer',
-  fields: () => ({
-    question_id: { type: GraphQLString },
-    question_text: { type: GraphQLString },
-    value: { type: GraphQLScalarType }
   })
 });
 
@@ -95,7 +87,27 @@ const UserSurveyAnswers = new GraphQLObjectType({
     user_id: { type: GraphQLID },
     user_name: { type: GraphQLString },
     date: { type: GraphQLString },
-    answers: { type: [SurveyAnswer]}
+    answers: { type: [SurveyAnswerType] }
+  })
+});
+
+const SurveyAnswerType = new GraphQLObjectType({
+  name: 'SurveyAnswer',
+  fields: () => ({
+    question_id: { type: GraphQLString },
+    question_text: { type: GraphQLString },
+    question_comment: { type: GraphQLString },
+    // value: { type: GraphQLString }
+  })
+});
+
+const SurveyAnswerInputType = new GraphQLInputObjectType({
+  name: 'SurveyAnswerInput',
+  fields: () => ({
+    question_id: { type: GraphQLString },
+    question_text: { type: GraphQLString },
+    question_comment: { type: GraphQLString },
+    // value: { type: new GraphQLObjectType() }
   })
 });
 
@@ -107,12 +119,12 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(UserType),
       resolve(parent, args) {
         return Promise.resolve(users);
-      }
+      },
     },
     user: {
       type: UserType,
       args: {
-        user_id: {type: GraphQLID }
+        user_id: { type: GraphQLID }
       },
       resolve(parent, args) {
         return Promise.resolve(users.find(u => u.user_id === Number.parseInt(args.user_id)));
@@ -178,6 +190,16 @@ const RootMutation = new GraphQLObjectType({
           smoker_status: args.smoker_status || defaultProfile.smoker_status,
           drinker_status: args.drinker_status || defaultProfile.drinker_status
         });
+      }
+    },
+    answers: {
+      type:  new GraphQLList(SurveyAnswerType),
+      args: {
+        answers: { type: new GraphQLList(SurveyAnswerInputType) },
+      },
+      resolve(parent, args, context, info) {
+        console.log('Args', args);
+        return args.answers;
       }
     }
   }
