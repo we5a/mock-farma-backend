@@ -9,6 +9,10 @@ const {
   GraphQLList,
   GraphQLInputObjectType
 } = require('graphql');
+const {
+  GraphQLJSON,
+  GraphQLJSONObject
+} = require('graphql-type-json');
 
 const users = [
   {
@@ -97,7 +101,7 @@ const SurveyAnswerType = new GraphQLObjectType({
     question_id: { type: GraphQLString },
     question_text: { type: GraphQLString },
     question_comment: { type: GraphQLString },
-    // value: { type: GraphQLString }
+    value: { type: GraphQLJSON }
   })
 });
 
@@ -107,7 +111,7 @@ const SurveyAnswerInputType = new GraphQLInputObjectType({
     question_id: { type: GraphQLString },
     question_text: { type: GraphQLString },
     question_comment: { type: GraphQLString },
-    // value: { type: new GraphQLObjectType() }
+    value: { type: GraphQLJSON }
   })
 });
 
