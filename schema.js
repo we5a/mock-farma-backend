@@ -7,7 +7,8 @@ const {
   GraphQLSchema,
   GraphQLScalarType,
   GraphQLList,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
+  GraphQLNonNull
 } = require('graphql');
 const {
   GraphQLJSON,
@@ -98,9 +99,9 @@ const UserSurveyAnswers = new GraphQLObjectType({
 const SurveyAnswerType = new GraphQLObjectType({
   name: 'SurveyAnswer',
   fields: () => ({
-    question_id: { type: GraphQLString },
-    question_text: { type: GraphQLString },
-    question_comment: { type: GraphQLString },
+    questionId: { type: new GraphQLNonNull(GraphQLString) },
+    questionText: { type: GraphQLString },
+    questionComment: { type: GraphQLString },
     value: { type: GraphQLJSON }
   })
 });
@@ -108,11 +109,11 @@ const SurveyAnswerType = new GraphQLObjectType({
 const SurveyAnswerInputType = new GraphQLInputObjectType({
   name: 'SurveyAnswerInput',
   fields: () => ({
-    question_id: { type: GraphQLString },
-    question_text: { type: GraphQLString },
-    question_comment: { type: GraphQLString },
+    questionId: { type:  new GraphQLNonNull(GraphQLString) },
+    questionText: { type: GraphQLString },
+    questionComment: { type: GraphQLString },
     value: { type: GraphQLJSON }
-  })
+    })
 });
 
 
@@ -196,13 +197,12 @@ const RootMutation = new GraphQLObjectType({
         });
       }
     },
-    answers: {
+    setAnswers: {
       type:  new GraphQLList(SurveyAnswerType),
       args: {
         answers: { type: new GraphQLList(SurveyAnswerInputType) },
       },
       resolve(parent, args, context, info) {
-        console.log('Args', args);
         return args.answers;
       }
     }
