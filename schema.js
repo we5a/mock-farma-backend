@@ -38,12 +38,12 @@ const users = [
 
 const defaultProfile = {
   id: 1,
-  full_name: 'Jin Smith (default)',
+  fullName: 'Jin Smith (default)',
   email: 'default-jine@gmail.com',
-  birth_date: '1967-10-05', // YYYY-MM-DD
-  ethnic_identity: 'Hispanic/Latino/LatinX',
-  smoker_status: false,
-  drinker_status: false
+  birthDate: '1967-10-05', // YYYY-MM-DD
+  ethnicIdentity: 'Hispanic/Latino/LatinX',
+  smokerStatus: false,
+  drinkerStatus: false
 };
 
 const defaultAuthPayload = {
@@ -62,16 +62,29 @@ const UserType = new GraphQLObjectType({
   })
 });
 
-const UserProfile = new GraphQLObjectType({
+const UserProfileType = new GraphQLObjectType({
   name: 'UserProfile',
   fields: () => ({
-    id: { type: GraphQLID },
-    full_name: { type: GraphQLString },
+    id: { type: new GraphQLNonNull(GraphQLID) },
     email: { type: GraphQLString },
-    birth_date: { type: GraphQLString },
-    ethnic_identity: { type: GraphQLString },
-    smoker_status: { type: GraphQLBoolean },
-    drinker_status: { type: GraphQLBoolean }
+    fullName: { type: GraphQLString },
+    birthDate: { type: GraphQLString },
+    ethnicIdentity: { type: GraphQLString },
+    smokerStatus: { type: GraphQLBoolean },
+    drinkerStatus: { type: GraphQLBoolean }
+  })
+});
+
+const UserProfileInputType = new GraphQLInputObjectType({
+  name: 'UserProfileInput',
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    email: { type: GraphQLString },
+    fullName: { type: GraphQLString },
+    birthDate: { type: GraphQLString },
+    ethnicIdentity: { type: GraphQLString },
+    smokerStatus: { type: GraphQLBoolean },
+    drinkerStatus: { type: GraphQLBoolean }
   })
 });
 
@@ -86,20 +99,10 @@ const AuthPayload = new GraphQLObjectType({
   })
 });
 
-const UserSurveyAnswers = new GraphQLObjectType({
-  name: 'UserSurveyAnswers',
-  fields: () => ({
-    user_id: { type: GraphQLID },
-    user_name: { type: GraphQLString },
-    date: { type: GraphQLString },
-    answers: { type: [SurveyAnswerType] }
-  })
-});
-
 const SurveyAnswerType = new GraphQLObjectType({
   name: 'SurveyAnswer',
   fields: () => ({
-    questionId: { type: new GraphQLNonNull(GraphQLString) },
+    questionId: { type: new GraphQLNonNull(GraphQLID) },
     questionText: { type: GraphQLString },
     questionComment: { type: GraphQLString },
     value: { type: GraphQLJSON }
@@ -109,7 +112,7 @@ const SurveyAnswerType = new GraphQLObjectType({
 const SurveyAnswerInputType = new GraphQLInputObjectType({
   name: 'SurveyAnswerInput',
   fields: () => ({
-    questionId: { type:  new GraphQLNonNull(GraphQLString) },
+    questionId: { type:  new GraphQLNonNull(GraphQLID) },
     questionText: { type: GraphQLString },
     questionComment: { type: GraphQLString },
     value: { type: GraphQLJSON }
@@ -136,7 +139,7 @@ const RootQuery = new GraphQLObjectType({
       }
     },
     profile: {
-      type: UserProfile,
+      type: UserProfileType,
       resolve(parent, args) {
         // in real app: check token and get proper profile data to send
         return Promise.resolve(defaultProfile);
@@ -177,24 +180,21 @@ const RootMutation = new GraphQLObjectType({
       }
     },
     profile: {
-      type: UserProfile,
+      type: UserProfileType,
       args: {
-        full_name: { type: GraphQLString },
-        email: { type: GraphQLString },
-        birth_date: { type: GraphQLString },
-        ethnic_identity: { type: GraphQLString },
-        smoker_status: { type: GraphQLBoolean },
-        drinker_status: { type: GraphQLBoolean }
+        profile: { type: UserProfileInputType },
       },
-      resolve(parent, args, context, info) {
-        return Promise.resolve({
-          full_name: args.full_name || defaultProfile.name,
-          email: args.email || defaultProfile.email,
-          birth_date: args.birth_dateh || defaultProfile.birth_date,
-          ethnic_identity: args.ethnic_identity || defaultProfile.ethnic_identity,
-          smoker_status: args.smoker_status || defaultProfile.smoker_status,
-          drinker_status: args.drinker_status || defaultProfile.drinker_status
-        });
+      resolve(parent, { profile }, context, info) {
+        const { id, fullName, email, birthDate, ethnicIdentity, smokerStatus, drinkerStatus } = profile;
+        return {
+          id: id,
+          fullName: fullName || defaultProfile.name,
+          email: email || defaultProfile.email,
+          birthDate: birthDate || defaultProfile.birthDate,
+          ethnicIdentity: ethnicIdentity || defaultProfile.ethnicIdentity,
+          smokerStatus: smokerStatus || defaultProfile.smokerStatus,
+          drinkerStatus: drinkerStatus || defaultProfile.drinkerStatus
+        }
       }
     },
     setAnswers: {
