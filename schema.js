@@ -15,6 +15,16 @@ const {
   GraphQLJSONObject
 } = require('graphql-type-json');
 
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
+
+const generateAccessToken = (inputData) => {
+  return jwt.sign(inputData, process.env.TOKEN_SECRET, {
+    expiresIn: "10h"
+  });
+}
+
 const users = [
   {
     user_id: 1,
@@ -173,10 +183,14 @@ const RootMutation = new GraphQLObjectType({
         password: { type: GraphQLString }
       },
       resolve(parent, args, context, info) {
-        return Promise.resolve({
-          email: args.email,
-          token: defaultAuthPayload.token
-        });
+        if (args.email === process.env.DEFAULT_USER_EMAIL && args.password === process.env.DEFAULT_PASS) {
+          const token = generateAccessToken({ email: args.email });
+          return {
+            email: args.email,
+            token
+          };
+        }
+        return new Error('Email or password is invalid!');
       }
     },
     profile: {
