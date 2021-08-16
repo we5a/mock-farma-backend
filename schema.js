@@ -58,7 +58,7 @@ const defaultProfile = {
 
 const defaultAuthPayload = {
   name: 'Jin Smith',
-  token: '-=AAA123_authentication_token_from_backend=-',
+  // token: '-=AAA123_authentication_token_from_backend=-',
   avatar_url: 'https://mpng.subpng.com/20180326/wzw/kisspng-computer-icons-user-profile-avatar-female-profile-5ab915f791e2c1.8067312315220792235976.jpg'
 }
 
@@ -168,12 +168,16 @@ const RootMutation = new GraphQLObjectType({
         password: { type: GraphQLString }
       },
       resolve(parent, args, context, info) {
-        return Promise.resolve({
-          name: defaultAuthPayload.name,
-          email: args.email,
-          avatar_url: defaultAuthPayload.avatar_url,
-          token: defaultAuthPayload.token
-        });
+        if (args.email === process.env.DEFAULT_USER_EMAIL && args.password === process.env.DEFAULT_PASS) {
+          const token = generateAccessToken({ email: args.email });
+          return {
+            name: defaultAuthPayload.name,
+            email: args.email,
+            avatar_url: defaultAuthPayload.avatar_url,
+            token
+          };
+        }
+        return new Error('Email or password is invalid')
       }
     },
     signup: {
@@ -190,7 +194,7 @@ const RootMutation = new GraphQLObjectType({
             token
           };
         }
-        return new Error('Email or password is invalid!');
+        return new Error('Please use the default user');
       }
     },
     profile: {
